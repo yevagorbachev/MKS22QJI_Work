@@ -3,12 +3,17 @@ const canvas_context = canvas.getContext("2d");
 const start_button = document.getElementById("start-button");
 const stop_button = document.getElementById("stop-button");
 
+const canvas_bounds = [[0,canvas.width], [0,canvas.height]];
+
 const radius_lower = 0;
 const radius_upper = canvas.width / 2;
 let radius_step = 1;
 let radius = 10;
 
-// let running = 0;
+const dvd = new Image();
+dvd.src = "dvd.jpg"
+let dvd_step = [1, 1];
+let dvd_size = [];
 
 let animation_id;
 
@@ -37,7 +42,27 @@ const circle = function(radius) {
 	return ret;
 }
 
-const next_circle = function(ctx) {
+const animate = function(animation) {
+	let ret = function(e) {
+		window.cancelAnimationFrame(animation_id);
+		animation(e);
+		animation_id = window.requestAnimationFrame(animate(animation));
+	}		
+	return ret;
+}
+
+const start_anim = function(animation) {
+	let ret = function(e) {
+		animation_id = window.requestAnimationFrame(animate(animation));
+	}
+	return ret;
+}
+
+const stop_anim = function(e) {
+	window.cancelAnimationFrame(animation_id);
+}
+
+const step_circle = function(ctx) {
 	let ret = function(e) {
 		if (radius_step > 0) {
 			if (radius == radius_upper) {
@@ -54,36 +79,15 @@ const next_circle = function(ctx) {
 	return ret;
 }
 
-const animate = function(animation) {
+const step_dvd = function(ctx) {
 	let ret = function(e) {
-		// if (!running) {
-		// 	return;
-		// }
-		window.cancelAnimationFrame(animation_id);
-		animation(e);
-		animation_id = window.requestAnimationFrame(animate(animation));
-	}		
-	return ret;
-}
 
-const start_anim = function(e) {
-	// if (running) {
-	// 	return;
-	// }
-	// running = 1 - running;
-	window.requestAnimationFrame(animate(next_circle(canvas_context)));
-	return;
-}
-
-const stop_anim = function(id) {
-	let ret = function(e) {
-		// if (running) {
-		// 	running = 1 - running;
-		// }
-		window.cancelAnimationFrame(animation_id);
 	}
-	return ret;
 }
 
-start_button.addEventListener("click", start_anim);
-stop_button.addEventListener("click", stop_anim(animation_id));
+// start_button.addEventListener("click", start_anim(step_circle(canvas_context)));
+// stop_button.addEventListener("click", stop_anim);
+canvas_context.beginPath();
+canvas_context.drawImage(dvd, 0, 0);
+canvas_context.stroke();
+canvas_context.fill();
