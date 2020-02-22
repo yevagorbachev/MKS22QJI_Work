@@ -11,9 +11,9 @@ let radius_step = 1;
 let radius = 10;
 
 const dvd = new Image();
-dvd.src = "dvd.jpg"
+dvd.src = "dvd.png";
 let dvd_step = [1, 1];
-let dvd_size = [];
+let dvd_pos = [0, 0];
 
 let animation_id;
 
@@ -24,20 +24,20 @@ const clear = function(ctx) {
 	return ret;
 }
 
-const render = function(path, ctx) {
+const render = function(frame, ctx) {
 	let ret = function(e) {
 		clear(ctx)(e);
-		ctx.beginPath();
-		path(ctx);
-		ctx.stroke();
-		ctx.fill();
+		frame(ctx);
 	}
 	return ret;
 }
 
 const circle = function(radius) {
 	let ret = function(ctx) {
+		ctx.beginPath();
 		ctx.arc(300, 300, radius, 0, 2 * Math.PI);
+		ctx.stroke();
+		ctx.fill();
 	}
 	return ret;
 }
@@ -68,26 +68,33 @@ const step_circle = function(ctx) {
 			if (radius == radius_upper) {
 				radius_step = -radius_step;
 			}
-			render(circle(radius += radius_step), ctx)();
-		} else {
+		}
+		else {
 			if (radius == radius_lower) {
 				radius_step = -radius_step
 			}
-			render(circle(radius += radius_step), ctx)();
+		}
+		render(circle(radius += radius_step), ctx)();
+	}
+	return ret;
+}
+
+const step_bounce_box = function(image, bounds, pos, delta, ctx) {
+	let ret = function(e) {
+		// hitting top
+		if (pos[0] == bounds[0]) {
+
 		}
 	}
 	return ret;
 }
 
-const step_dvd = function(ctx) {
-	let ret = function(e) {
-
-	}
-}
-
 // start_button.addEventListener("click", start_anim(step_circle(canvas_context)));
 // stop_button.addEventListener("click", stop_anim);
-canvas_context.beginPath();
-canvas_context.drawImage(dvd, 0, 0);
-canvas_context.stroke();
-canvas_context.fill();
+// canvas_context.beginPath();
+
+window.onload = function() {
+	window.requestAnimationFrame(render(image, canvas_context));
+}
+// canvas_context.stroke();
+// canvas_context.fill();
