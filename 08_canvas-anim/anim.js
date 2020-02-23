@@ -1,3 +1,9 @@
+/*
+Yevgeniy Gorbachev
+SoftDev pd1
+K08 -- What is it saving the screen from?
+2020-02-14
+*/
 const canvas = document.getElementById("canvas");
 const canvas_context = canvas.getContext("2d");
 
@@ -123,21 +129,22 @@ const step_bounce_box = function(image, pos, delta, canv) {
 
 const start_circle = function(e) {
 	console.log("Starting circle animation");
+	stop_anim(e)
 	radius_step = 1;
 	radius = 5;
-	animation_id = window.requestAnimationFrame(animate(step_circle));
+	animation_id = window.requestAnimationFrame(animate(step_circle(canvas_context)));
 };
 
 const start_screensaver = function(e) {
-	console.log("Starting screensaver animation");
-	stop_anim(e);
-	dvd_step[0], dvd_step[1] = 1, 1;
-	console.log(dvd_step);
 	let randint = function(min, max) {
-		return min + Math.floor(Math.random * (max - min));
+		return min + Math.floor(Math.random() * (max - min));
 	};
-	dvd_pos[0], dvd_pos[1] = randint(0, canvas.width), randint(0, canvas.height);
-	console.log(dvd_pos);
+
+	stop_anim(e);
+	dvd_step[0] = dvd_step[1] = 1;
+	dvd_pos[0] = randint(0, canvas.width - dvd.width);
+	dvd_pos[1] = randint(0, canvas.height - dvd.height);
+
 	animation_id = window.requestAnimationFrame(animate(
 		step_bounce_box(dvd, dvd_pos, dvd_step, canvas)
 	));
