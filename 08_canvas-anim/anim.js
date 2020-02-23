@@ -1,9 +1,9 @@
 const canvas = document.getElementById("canvas");
 const canvas_context = canvas.getContext("2d");
-const start_button = document.getElementById("start-button");
-const stop_button = document.getElementById("stop-button");
 
-const canvas_bounds = [[0,canvas.width], [0,canvas.height]];
+const start_circle_button = document.getElementById("start-circle-button");
+const start_dvd_button = document.getElementById("start-dvd-button");
+const stop_button = document.getElementById("stop-button");
 
 const radius_lower = 0;
 const radius_upper = canvas.width / 2;
@@ -12,55 +12,64 @@ let radius = 10;
 
 const dvd = new Image();
 dvd.src = "dvd.png";
-let dvd_step = [1, 1];
-let dvd_pos = [0, 0];
+const dvd_step = [1, 1];
+const dvd_pos = [0, 0];
 
-let animation_id;
+let animation_id = 0;
+
+// GENERAL CANVAS FUNCTIONS ///////////////////////////////////////////////////
 
 const clear = function(ctx) {
+	// clears canvas
 	let ret = function(e) {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-	}
+	};
 	return ret;
-}
+};
 
 const render = function(frame, ctx) {
+	// clears canvas, executes frame() on the context
 	let ret = function(e) {
 		clear(ctx)(e);
 		frame(ctx);
-	}
+	};
 	return ret;
-}
-
-const circle = function(radius) {
-	let ret = function(ctx) {
-		ctx.beginPath();
-		ctx.arc(300, 300, radius, 0, 2 * Math.PI);
-		ctx.stroke();
-		ctx.fill();
-	}
-	return ret;
-}
+};
 
 const animate = function(animation) {
 	let ret = function(e) {
 		window.cancelAnimationFrame(animation_id);
 		animation(e);
 		animation_id = window.requestAnimationFrame(animate(animation));
-	}		
+	};
 	return ret;
-}
-
-const start_anim = function(animation) {
-	let ret = function(e) {
-		animation_id = window.requestAnimationFrame(animate(animation));
-	}
-	return ret;
-}
+};
 
 const stop_anim = function(e) {
-	window.cancelAnimationFrame(animation_id);
-}
+	if (animation_id) {
+		window.cancelAnimationFrame(animation_id);
+	}
+};
+
+// FRAMES AND ANIMATIONS //////////////////////////////////////////////////////
+
+const circle = function(radius) {
+	// renders a circle on the canvas, centered at the middle of the canvas
+	let ret = function(ctx) {
+		ctx.beginPath();
+		ctx.arc(canvas.height / 2, canvas.width / 2, radius, 0, 2 * Math.PI);
+		ctx.stroke();
+		ctx.fill();
+	};
+	return ret;
+};
+
+const draw_image = function(image, pos) {
+	let ret = function(ctx) {
+		ctx.drawImage(image, pos[0], pos[1]);
+	};
+	return ret;
+};
 
 const step_circle = function(ctx) {
 	let ret = function(e) {
@@ -77,24 +86,63 @@ const step_circle = function(ctx) {
 		render(circle(radius += radius_step), ctx)();
 	}
 	return ret;
-}
+};
 
-const step_bounce_box = function(image, bounds, pos, delta, ctx) {
+const step_bounce_box = function(image, pos, delta, canv) {
 	let ret = function(e) {
-		// hitting top
-		if (pos[0] == bounds[0]) {
+		// extracting information from canvas
+		ctx = canv.getContext("2d");
+		bounds = [
+			[0, canv.width],
+			[0, canv.height]
+		];
 
-		}
-	}
+		// rendering image
+		render(draw_image(image, pos), ctx)();
+		pos[0] += delta[0];
+		pos[1] += delta[1];
+
+		// mutating direction
+		hits = [
+			[pos[0] <= bounds[0][0], pos[0] + image.width >= bounds[0][1]],
+			// hit left, right
+			[pos[1] <= bounds[1][0], pos[1] + image.height >= bounds[1][1]]
+			// hit top, bottom
+		];
+		if (hits[0][0] || hits[0][1]) {
+			delta[0] = -delta[0];
+		};
+		if (hits[1][0] || hits[1][1]) {
+			delta[1] = -delta[1];
+		};
+	};
 	return ret;
-}
+};
 
-// start_button.addEventListener("click", start_anim(step_circle(canvas_context)));
-// stop_button.addEventListener("click", stop_anim);
-// canvas_context.beginPath();
+// START FUNCTIONS ////////////////////////////////////////////////////////////
 
-window.onload = function() {
-	window.requestAnimationFrame(render(image, canvas_context));
-}
-// canvas_context.stroke();
-// canvas_context.fill();
+const start_circle = function(e) {
+	console.log("Starting circle animation");
+	radius_step = 1;
+	radius = 5;
+	animation_id = window.requestAnimationFrame(animate(step_circle));
+};
+
+const start_screensaver = function(e) {
+	console.log("Starting screensaver animation");
+	stop_anim(e);
+	dvd_step[0], dvd_step[1] = 1, 1;
+	console.log(dvd_step);
+	let randint = function(min, max) {
+		return min + Math.floor(Math.random * (max - min));
+	};
+	dvd_pos[0], dvd_pos[1] = randint(0, canvas.width), randint(0, canvas.height);
+	console.log(dvd_pos);
+	animation_id = window.requestAnimationFrame(animate(
+		step_bounce_box(dvd, dvd_pos, dvd_step, canvas)
+	));
+};
+
+start_circle_button.addEventListener("click", start_circle);
+start_dvd_button.addEventListener("click", start_screensaver);
+stop_button.addEventListener("click", stop_anim);
