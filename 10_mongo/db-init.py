@@ -1,13 +1,17 @@
 import json
-import csv
+
+import sys
 from pprint import pprint
 from pymongo import MongoClient
 from bson.json_util import loads as bson_loads
+
 
 client = MongoClient('localhost', 27017)  # default mongo port is 27017
 db = client['schools']
 
 def generate_json(csvpath, outpath):
+    '''uses the given csv file path to generate corresponding json'''
+    from csv import DictReader
     with open(csvpath, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
         lines = [line for line in reader]
@@ -15,22 +19,27 @@ def generate_json(csvpath, outpath):
     with open(outpath,'w') as outfile:
         outfile.write(json.dumps(lines))
 
-# generate_json('grad.csv','grad_results.json')
-
-def insert_db():
+def insert_db(jsonpath):
+    '''inserts contents of jsonpath into db.schools.collection'''
     schools = db.collection
-    # schools.insert_many(json.loads(data))
-    with open('grad_results.json', 'r') as datafile:
+    with open(jsonpath, 'r') as datafile:
         data = json.loads(datafile.read())
-        for record in data:
-            try:
-                schools.insert_one(bson_loads(json.dumps(record)))
-                # print(f'Successfully inserted {record}')
-            except TypeError as error:
-                print(error)
-                break
+    for record in data:
+        result = schools.insert_one(bson_loads(json.dumps(record))
 
-insert_db()
+def main(argv = None):
+    if not argv:
+        argv = sys.argv
+    if len(argv) == 1:
+        print('Usage: \n\t-g: generates json from \"grad.csv\"\n\t-i: inserts contents of \"grad_results.json\" into local mongo')
+    flags = argv[1]
+    if 'g' in flags:
+        generate_json('grad.csv', 'grad_results.json')
+    if 'i' in flags:
+        insertdb('grad_results.json')
+    
+main()
+    
 # client = MongoClient()
 # db = client.schools
 # db.data.drop()
@@ -91,7 +100,7 @@ insert_db()
 def findDropout(year,cat,dem):
     cursor = db.schools.find({'Demographics': dem})
     for c in cursor:
-        print(c)
+        pprint(c)
         #return db.schools.find({"Cohort Year": year, "Cohort Category": cat, "Demographic": dem},{"% of cohort Dropped Out":1, '_id':0})
 
 # print(3)
