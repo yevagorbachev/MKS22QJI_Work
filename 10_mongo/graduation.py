@@ -2,7 +2,7 @@ import json
 import csv
 from pprint import pprint
 from pymongo import MongoClient
-# from bson.json_util import loads
+from bson.json_util import loads
 
 def generate_json(csvpath, outpath):
     with open(csvpath, 'r') as csvfile:
@@ -14,18 +14,19 @@ def generate_json(csvpath, outpath):
 
 # generate_json('grad.csv','grad_results.json')
 
-client = MongoClient('localhost', 27017)  # default mongo port is 27017
-db = client['schools']
-schools = db['schools-collection']
-# schools.insert_many(json.loads(data))
-with open('grad_results.json', 'r') as data:
-    one = data.readline()
-    while one:
-        print(one)
-        schools.insert_one(data)
+def insert_db():
+    db = client['schools']
+    client = MongoClient('localhost', 27017)  # default mongo port is 27017
+    schools = db['schools-collection']
+    # schools.insert_many(json.loads(data))
+    with open('grad_results.json', 'r') as data:
         one = data.readline()
+        while one:
+            print(one)
+            schools.insert_one(loads(data))
+            one = data.readline()
 
-
+insert_db()
 # client = MongoClient()
 # db = client.schools
 # db.data.drop()
