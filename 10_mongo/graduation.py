@@ -15,8 +15,8 @@ def generate_json(csvpath, outpath):
 # generate_json('grad.csv','grad_results.json')
 
 def insert_db():
-    db = client['schools']
     client = MongoClient('localhost', 27017)  # default mongo port is 27017
+    db = client['schools']
     schools = db['schools-collection']
     # schools.insert_many(json.loads(data))
     with open('grad_results.json', 'r') as data:
