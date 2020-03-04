@@ -18,7 +18,7 @@ def generate_json(csvpath, outpath):
 # generate_json('grad.csv','grad_results.json')
 
 def insert_db():
-    schools = db['schools-collection']
+    schools = db.collection
     # schools.insert_many(json.loads(data))
     with open('grad_results.json', 'r') as datafile:
         data = json.loads(datafile.read())
@@ -30,7 +30,7 @@ def insert_db():
                 print(error)
                 break
 
-# insert_db()
+insert_db()
 # client = MongoClient()
 # db = client.schools
 # db.data.drop()
