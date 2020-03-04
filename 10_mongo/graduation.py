@@ -26,6 +26,7 @@ def insert_db():
         for record in data:
             try:
                 schools.insert_one(bson_loads(json.dumps(record)))
+                print(f'Successfully inserted {record}')
             except TypeError as error:
                 print(error)
                 break
