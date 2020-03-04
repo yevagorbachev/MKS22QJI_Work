@@ -4,6 +4,9 @@ from pprint import pprint
 from pymongo import MongoClient
 from bson.json_util import loads as bson_loads
 
+client = MongoClient('localhost', 27017)  # default mongo port is 27017
+db = client['schools']
+
 def generate_json(csvpath, outpath):
     with open(csvpath, 'r') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -15,27 +18,19 @@ def generate_json(csvpath, outpath):
 # generate_json('grad.csv','grad_results.json')
 
 def insert_db():
-    client = MongoClient('localhost', 27017)  # default mongo port is 27017
-    db = client['schools']
     schools = db['schools-collection']
     # schools.insert_many(json.loads(data))
     with open('grad_results.json', 'r') as datafile:
         data = json.loads(datafile.read())
-        print(type(data))
-        # one = data.readline()
         for record in data:
             try:
                 schools.insert_one(bson_loads(json.dumps(record)))
-                print(f'Successfully inserted {record}')
+                # print(f'Successfully inserted {record}')
             except TypeError as error:
                 print(error)
                 break
-        # while one:
-        #     print(one)
-        #     schools.insert_one(loads(data))
-        #     one = data.readline()
 
-insert_db()
+# insert_db()
 # client = MongoClient()
 # db = client.schools
 # db.data.drop()
@@ -96,11 +91,11 @@ insert_db()
 def findDropout(year,cat,dem):
     cursor = db.schools.find({'Demographics': dem})
     for c in cursor:
-        pprint(c)
+        print(c)
         #return db.schools.find({"Cohort Year": year, "Cohort Category": cat, "Demographic": dem},{"% of cohort Dropped Out":1, '_id':0})
 
 # print(3)
-# print(findDropout(2001, '4 Year June', 'English Language Learner'))
+findDropout(2001, '4 Year June', 'English Language Learner')
 
 #% of cohort Dropped Out, % of cohort  Advanced Regents, % of cohort Total Grads
 #ELLs w/ dropout rate less than 20%
