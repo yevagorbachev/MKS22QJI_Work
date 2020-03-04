@@ -23,6 +23,12 @@ def insert_db():
         data = json.loads(datafile.read())
         print(type(data))
         # one = data.readline()
+        for record in data:
+            try:
+                schools.insert_one(bson_loads(json.dumps(record)))
+            except TypeError as error:
+                print(error)
+                break
         # while one:
         #     print(one)
         #     schools.insert_one(loads(data))
@@ -92,8 +98,8 @@ def findDropout(year,cat,dem):
         pprint(c)
         #return db.schools.find({"Cohort Year": year, "Cohort Category": cat, "Demographic": dem},{"% of cohort Dropped Out":1, '_id':0})
 
-print(3)
-print(findDropout(2001, '4 Year June', 'English Language Learner'))
+# print(3)
+# print(findDropout(2001, '4 Year June', 'English Language Learner'))
 
 #% of cohort Dropped Out, % of cohort  Advanced Regents, % of cohort Total Grads
 #ELLs w/ dropout rate less than 20%
