@@ -1,11 +1,13 @@
 {% extends "_base.html" %}
+
 {% block title %} Query results {% endblock title %}
+
 {% block head %} 
-<h>Results</h>
+	<h>Results</h>
 {% endblock head %}
 {% block body %}
-{% for item in data %}
-{{data}}<br>
-{% endfor %}
-<a href='/'>Home</a>
+	{% for item in data %}
+		{{data}}<br>
+	{% endfor %}
+	<a href='/'>Home</a>
 {% endblock body %}
