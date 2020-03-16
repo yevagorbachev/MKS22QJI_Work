@@ -1,16 +1,18 @@
 {% extends "_base.html" %}
-{% block title %} Query Databases {% endblock title %}
+{% block title %} Query Databases {% endblock %}
+
 {% block head %} 
 <h>Select database query</h>
-{% endblock head %}
+{% endblock %}
+
 {% block body %}
 <form action="/results", method="POST">
 	<select id="search-parameter">
-		<option value="Cohort Year"></option>
-		<option value="Cohort Demographic"></option>
-	</select>
-	<input type="text" name="Value">
-	<input type="submit" value="Submit">
+		<option value="Cohort Year">Year</option>
+		<option value="Cohort Demographic">Demographic</option>
+	</select><br>
+	Search value: <input type="text" name="Value"><br>
+	Submit: <input type="submit" value="Submit"><br>
 </form>
-{% endblock body %}
+{% endblock %}
 
