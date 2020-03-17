@@ -1,23 +1,19 @@
 {% extends "_base.html" %}
 
-{% block title %}Query Databases{% endblock title %}
+{% block title %}Query Databases{% endblock title %}
 
 {% block head %}
 <h1>Select database query</h1>
 {% endblock %}
 
-{% block body %}
+{% block body %}
 <form action="/results" method="POST">
 	<select name="parameter">
 		<option value="RG/Cohort Year">Regents data: Cohort Year</option>
 		<option value="RG/Demographic">Regents data: Cohort Demographic</option>
-		<option value="JP/category">Jeapordy questions: Question category</option>
-		<option value="JP/value">Jeapordy questions: Question value</option>
+		<option value="JP/show_number">Jeopardy questions: Show Number</option>
+		<option value="JP/value">Jeopardy questions: Question value</option>
 	</select>
-	<!-- <input type="select" name="parameter">
-		<option value="Cohort Year">Cohort Year</option>
-		<option value="Cohort Demographic">Cohort Demographic</option>
-	</input> -->
 	<br>
 	<input type="text" name="value" placeholder="query"></input>
 	<br>
@@ -25,4 +21,3 @@
 	<input type="submit" name="submit"></input>
 </form>
 {% endblock %}
-

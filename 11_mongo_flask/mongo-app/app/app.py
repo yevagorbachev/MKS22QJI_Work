@@ -1,13 +1,12 @@
-#Yevgeniy Gorbachev
-#SoftDev1 pd1
-#K<n> -- <K<n>.__name__>
-#ISO 8601 Date
+# Eric "Morty" Lau
+# SoftDev1 pd1
+# K11 -- Ay Mon Go Git It From Yer Flask
+# 2020-03-17
 
 from flask import Flask, render_template, request
 import flask
 from os import urandom
-# from utils.mongo import query
-
+from utl import db_init, my_mongo
 
 app = Flask(__name__)
 app.secret_key = urandom(32)
@@ -26,12 +25,19 @@ def results():
 			data[0] = data[0][3:]
 			print(f'Querying regents dataset for {data[0]}, with value {data[1]}')
 			#query regents dataset
+			data = my_mongo.grad_find({data[0]: data[1]})
 		elif 'JP' in data[0]:
 			data[0] = data[0][3:]
-			print(f'Querying jeapordy questions dataset for {data[0]}, with value {data[1]}')
+			print(f'Querying jeopardy questions dataset for {data[0]}, with value {data[1]}')
 			# query jeapordy dataset
+			if data[0] == "value":
+				data = my_mongo.quiz_find({data[0]: f"${data[1]}"})
+			else:
+				data = my_mongo.quiz_find({data[0]: data[1]})
 		return render_template('results.html', data=data)
 
 application = app
 if __name__ == '__main__':
-	app.run(debug=True)
+			db_init.insert_jeopardy()
+			db_init.insert_grad_results()
+			app.run(debug=True)
