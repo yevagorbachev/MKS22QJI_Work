@@ -14,20 +14,24 @@ app.secret_key = urandom(32)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+	return render_template('index.html')
 
 @app.route('/results', methods = ['GET', 'POST'])
 def results():
-    if request.method == 'GET':
-        return flask.redirect(flask.url_for('index'))
-    elif request.method == 'POST':
-        data = [request.form['search-parameter'], request.form['value']]
-        # data = query(
-            # {request.form['search-parameter']:request.form['value']}, 
-            # { '\# Dropped Out':1, '_id':0 }
-        # )
-        return render_template('results.html', data=data)
+	if request.method == 'GET':
+		return flask.redirect(flask.url_for('index'))
+	elif request.method == 'POST':
+		data = [request.form['parameter'], request.form['value']]
+		if 'RG' in data[0]:
+			data[0] = data[0][3:]
+			print(f'Querying regents dataset for {data[0]}, with value {data[1]}')
+			#query regents dataset
+		elif 'JP' in data[0]:
+			data[0] = data[0][3:]
+			print(f'Querying jeapordy questions dataset for {data[0]}, with value {data[1]}')
+			# query jeapordy dataset
+		return render_template('results.html', data=data)
 
 application = app
 if __name__ == '__main__':
-    app.run(debug=True)
+	app.run(debug=True)
