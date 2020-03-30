@@ -5,7 +5,7 @@
 
 const w3svg = "http://www.w3.org/2000/svg";
 const image = document.getElementById("vimage");
-
+const clear_button = document.getElementById("clear")
 let x_last = y_last = -1;
 
 function dot(x, y) {
@@ -37,4 +37,10 @@ function draw(e) {
 	y_last = e.offsetY;
 };
 
+function clear(e) {
+	image.innerHTML = "";
+	x_last = y_last = -1;
+}
+
 image.addEventListener('click', draw);
+clear_button.addEventListener('click', clear);
