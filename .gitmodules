@@ -1,3 +1,6 @@
 [submodule "fall"]
 	path = fall
 	url = git@github.com:yevagorbachev/MKS21QJI_Work.git
+[submodule "p3"]
+	path = p3
+	url = git@github.com:yevagorbachev/Project_3_MKS22QJI
