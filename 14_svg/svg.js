@@ -4,112 +4,113 @@
 //2020-03-31
 
 //initialization
-const pic = document.getElementById("vimage");
-const button = document.getElementById("clear");
-const xtra = document.getElementById("xtra");
-const move = document.getElementById("move");
-const bbox = pic.getBoundingClientRect();
-const DOT_RADIUS = 25;
+const image = document.getElementById("vimage");
+const clear_button = document.getElementById("clear");
+const move_button = document.getElementById("move");
+
+const w3svg = "http://www.w3.org/2000/svg";
+const DOT_RADIUS = 10;
 const DOT_COLOR_0 = "black";
 const DOT_COLOR_1 = "red";
-const X_SPEED = 2;
-const Y_SPEED = 1;
-var frame;
-var projectileData = [];
+
+let bbox = image.getBoundingClientRect();
+const bounds = [
+	[DOT_RADIUS, bbox.width - DOT_RADIUS],
+	[DOT_RADIUS, bbox.height - DOT_RADIUS]
+];
+const origin = [bbox.left + DOT_RADIUS, bbox.top + DOT_RADIUS];
+let deltas = [];
+animation_id = 0;
+
+const dot = function(x, y) {
+	let circle = document.createElementNS(w3svg, "circle");
+	circle.setAttribute("cx", x);
+	circle.setAttribute("cy", y);
+	circle.setAttribute("r", DOT_RADIUS);
+	circle.setAttribute("fill", DOT_COLOR_0);
+	return circle;
+};
+
+
+const step_bounce_box = function(image, element, delta) {
+	pos = [parseInt(element.getAttribute("cx")), parseInt(element.getAttribute("cy"))];
+
+	hits = [
+		[pos[0] <= bounds[0][0], pos[0] >= bounds[0][1]],
+		[pos[1] <= bounds[1][0], pos[1] >= bounds[1][1]]
+	];
+
+	if (hits[0][0] || hits[0][1]) {
+		delta[0] = -delta[0];
+	};
+	if (hits[1][0] || hits[1][1]) {
+		delta[1] = -delta[1];
+	};
+
+	element.setAttribute("cx", pos[0] + delta[0]);
+	element.setAttribute("cy", pos[1] + delta[1]);
+}
+
+const new_pos = function(i) {
+	return Math.floor(Math.random() * (bounds[i][1] - bounds[i][0])) + origin[i];
+}
+
+const mutate = function(mode) {
+	let ret = function(e) {
+		if (mode) {
+			this.removeEventListener("click", mutate(1));
+			this.setAttribute("cx", new_pos(0));
+			this.setAttribute("cy", new_pos(1));
+			this.setAttribute("fill", DOT_COLOR_0);
+			this.addEventListener("click", mutate(0));
+		}
+		else {
+			this.removeEventListener("click", mutate(0));
+			this.setAttribute("fill", DOT_COLOR_1);
+			this.addEventListener("click", mutate(1));
+		};
+	};
+	return ret;
+}
+
+const animate = function(animation) {
+	let ret = function(e) {
+		window.cancelAnimationFrame(animation_id);
+		animation(e);
+		animation_id = window.requestAnimationFrame(animate(animation));
+	};
+	return ret;
+};
+
+const stop_anim = function(e) {
+	if (animation_id) {
+		window.cancelAnimationFrame(animation_id);
+	}
+};
 
 const draw = function(e) {
-	if (e.target == pic) {
-		let x = e.offsetX;
-		let y = e.offsetY;
-		let dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-		dot.setAttribute("cx", x);
-		dot.setAttribute("cy", y);
-		dot.setAttribute("r", DOT_RADIUS);
-		dot.setAttribute("fill", DOT_COLOR_0);
-		dot.addEventListener("mousedown", color);
-		dot.id = projectileData.length;
-		projectileData.push(-1);
-		pic.appendChild(dot);
-	}
+	if (e.target == image) {
+		new_dot = dot(e.offsetX, e.offsetY);
+		new_dot.addEventListener("click", mutate(0));
+		image.appendChild(new_dot);
+		deltas[deltas.length] = [1,1];
+	};
 };
 
-const color = function() {
-	this.removeEventListener("mousedown", color);
-	this.setAttribute("fill", DOT_COLOR_1);
-	this.addEventListener("mousedown", die);
+const frame = function(e) {
+	dots = image.children;
+	for (let i = 0; i < dots.length; i++) {
+		step_bounce_box(image, dots[i], deltas[i]);
+	};
 };
 
-const die = function() {
-	projectileData[this.id] = -1;
-	this.removeEventListener('mousedown', die);
-	this.setAttribute('fill', DOT_COLOR_0);
-	let x_range = bbox.width - 2 * DOT_RADIUS;
-	let y_range = bbox.height - 2 * DOT_RADIUS;
-	let x_offset = bbox.left + DOT_RADIUS;
-	let y_offset = bbox.top + DOT_RADIUS;
-	this.setAttribute('cx', Math.floor(Math.random() * x_range) + x_offset);
-	this.setAttribute('cy', Math.floor(Math.random() * y_range) + y_offset);
-	this.addEventListener('mousedown', color);
-};
-
-const anim = function() {
-	dots = document.getElementsByTagName("circle");
-	for (let dot of dots) {
-		if (projectileData[dot.id] < 0) {
-			projectileData[dot.id] = "0";
-		}
-	}
+const erase = function(e) {
+	deltas = [];
+	while (image.firstChild) {
+		image.removeChild(image.firstChild);
+	};
 }
 
-const propulse = function() {
-	dots = document.getElementsByTagName("circle");
-	for (let dot of dots) {
-		let id = Number(dot.id);
-		let data = Number(projectileData[id]);
-		if (data >= 0) {
-			if (data % 2) {
-				dot.setAttribute("cx", Number(dot.getAttribute("cx")) - X_SPEED);
-			}else {
-				dot.setAttribute("cx", Number(dot.getAttribute("cx")) + X_SPEED);
-			}
-			if (data > 1) {
-				dot.setAttribute("cy", Number(dot.getAttribute("cy")) - Y_SPEED);
-			}else {
-				dot.setAttribute("cy", Number(dot.getAttribute("cy")) + Y_SPEED);
-			}
-			x = dot.getAttribute("cx");
-			y = dot.getAttribute("cy");
-			if (x < DOT_RADIUS) {
-				projectileData[id] = data - 1;
-			}
-			if (x > bbox.width - DOT_RADIUS) {
-				projectileData[id] = data + 1;
-			}
-			if (y < DOT_RADIUS) {
-				projectileData[id] = data - 2;
-			}
-			if (y > bbox.width - DOT_RADIUS) {
-				projectileData[id] = data + 2;
-			}
-		}
-	}
-	frame = window.requestAnimationFrame(propulse);
-}
-
-const clear = function() {
-	pic.innerHTML = '';
-};
-
-const resize = function() {
-	dots = document.getElementsByTagName("circle");
-	for (let dot of dots) {
-		dot.setAttribute("r", Math.floor(1 + Math.random() * DOT_RADIUS));
-	}
-};
-
-pic.addEventListener("mousedown", draw);
-move.addEventListener("click", anim);
-button.addEventListener("click", clear);
-xtra.addEventListener("click", resize)
-
-propulse();
+image.addEventListener("click", draw);
+move_button.addEventListener("click", animate(frame));
+clear_button.addEventListener("click", erase);
