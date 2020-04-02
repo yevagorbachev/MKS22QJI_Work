@@ -1,0 +1,6 @@
+1. The content of the current entry will pop up in an alert. <CORRECT>
+2. Similar to (1), but the table's popup will appear first. <INCORRECT>
+	<CORRECTION> The smallest level alerts first, propogating up.
+3. Unaltered, same as (2) <INCORRECT>. When uncommented, clicking on a cell will product the result of the first activated level (i.e. the table). <CORRECT>
+	<CORRECTION> first table, then cell, then row. probably because the 'true' flag on the table's event listener indicates need to activate on the propogation down.
+4. Unaltered, popups go table - row - cell. <CORRECT> UWhen uncommented, only the table shows up. <CORRECT>
