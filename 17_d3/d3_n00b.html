@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--D3 demo: hardcoded bars removed, to be generated fr data-->
+<!--
+    Can yield a horizontal bar chart if properly bound to data
+    (steelblue bars, white number overlays)
+    ...but will yield only blank page at first.
+  -->
+<!--
+refactored-fiesta
+SoftDev2 pd0
+2099-12-31
+-->
+
+<style>
+  .chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+  }
+</style>
+
+<div class="chart">
+</div>
+
+<script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+<script>
+	let data = [4, 8, 15, 16, 23, 42];
+	let chart = d3.select(".chart"); // Finds the chart
+	let bar = chart.selectAll("div"); // Stores the (currently empty) div children of the chart
+	let barUpdate = bar.data(data); // Associates the data with the list of divs
+	let barEnter = barUpdate.enter().append("div").style("width", "0");
+	// ^^ Interates through the list, appending a div for each element of data
+	// ^^ Also styles each div to zero-width to make the transition look nicer
+
+	barEnter.transition().style("width", function(d) {return d * 10 + "px";});
+	// ^^ smoothly styles each div to the appropriate length
+	barEnter.text(function(d) { return d; }); // labels bars
+</script>
