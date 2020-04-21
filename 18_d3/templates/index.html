@@ -1,0 +1,12 @@
+{% extends "_base.html" %}
+{% block title %} $DATASETNAME {% endblock title %}
+{% block head %} This is a data set {% endblock head %}
+{% block body %}
+<div id="chart-container">
+	<svg id="chart" width="1000" height="500">
+		<!-- line chart here -->
+	</svg>
+</div>
+<script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+<script src="static/js/graph.js" charset="utf-8"></script>
+{% endblock body %}
