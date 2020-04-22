@@ -1,4 +1,5 @@
-// borrows heavily from [ https://www.d3-graph-gallery.com/graph/line_basic.html ]
+
+console.log("executing graph.js");
 
 let data = [
 	{independent: 1, dependent: 50},
@@ -8,11 +9,11 @@ let data = [
 	{independent: 5, dependent: 75},
 	{independent: 6, dependent: 66},
 ];
-// d3.csv('/data?file=dataset1', function(incoming) {data = incoming;});
-const x = 'independent';
-const y = 'dependent';
+
+d3.csv('/data?file=dataset1', function(incoming) {console.log(incoming)});
+
+// const x = 'independent';
+// const y = 'dependent';
 
 // html objects
-const chart = document.getElementById('chart');
-const lines = document.getElementById('lines');
 
