@@ -17,7 +17,7 @@ def index():
 @app.route('/data')
 def data():
 	files = {
-		'dataset1':'data/PATH1' # REPLACE WHEN IN USE
+		'dataset1':'data/CAERS_ASCII_2004_2017Q2.csv' # REPLACE WHEN IN USE
 	}
 	try:
 		return send_from_directory('csv', files[request.args['file']])
