@@ -17,13 +17,16 @@ def index():
 @app.route('/data')
 def data():
 	files = {
-		'dataset1':'data/CAERS_ASCII_2004_2017Q2.csv' # REPLACE WHEN IN USE
+		'dataset1':'data/data.csv' # REPLACE WHEN IN USE
 	}
 	try:
-		return send_from_directory('csv', files[request.args['file']])
-	except KeyError:
+		print(request.args['file'])
+		print(files[request.args['file']])
+		return send_file(files[request.args['file']], attachment_filename='dataset1.csv')
+	except KeyError as kerr:
+		print(kerr)
 		abort(404)
 
 application = app
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

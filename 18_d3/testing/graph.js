@@ -26,6 +26,8 @@ const axes = function(data) {
 	return [x, y];
 };
 
+const update_axes = function(data)
+
 const graph = function(image, dataum) {
 	image.append()
 };
