@@ -10,10 +10,8 @@ let data = [
 	{independent: 6, dependent: 66},
 ];
 
-d3.csv('/data?file=dataset1', function(incoming) {console.log(incoming)});
-
-// const x = 'independent';
-// const y = 'dependent';
+const x = 'independent';
+const y = 'dependent';
 
 // html objects
 

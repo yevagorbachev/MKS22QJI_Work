@@ -17,7 +17,7 @@ def index():
 @app.route('/data')
 def data():
 	files = {
-		'dataset1':'data/data.csv' # REPLACE WHEN IN USE
+		'dataset1':'data/data.csv'
 	}
 	try:
 		print(request.args['file'])
