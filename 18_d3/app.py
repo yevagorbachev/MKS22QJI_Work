@@ -20,8 +20,6 @@ def data():
 		'dataset1':'data/data.csv'
 	}
 	try:
-		print(request.args['file'])
-		print(files[request.args['file']])
 		return send_file(files[request.args['file']], attachment_filename='dataset1.csv')
 	except KeyError as kerr:
 		print(kerr)
