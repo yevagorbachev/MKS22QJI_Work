@@ -3,25 +3,23 @@
 {% block head %} <h>Food-related incidents by date</h> {% endblock head %}
 {% block body %}
 <div id="chart-container">
+	<svg id="chart" width="1000" height="600">
+
+	</svg>
 </div>
 <script src="http://d3js.org/d3.v5.min.js" charset="utf-8"></script>
-<script src="/static/js/graph.js" charset="utf-8"></script>
+<script src="/static/js/graph_v2.js" charset="utf-8"></script>
 <script>
-	const X_PARAM = "DATE";
-	const Y_PARAM = "ICSA";
-	const WIDTH = 1000;
-	const HEIGHT = 600;
 	const MARGINS = {top: 30, bottom: 40, left: 60, right: 20}
-
-	const GRAPH = new Graph(WIDTH, HEIGHT, MARGINS, {x_param: X_PARAM, y_param: Y_PARAM})
+	const PARAMS = {x: "DATE", y: "ICSA"};
+	const GRAPH = new LineGraph(d3.select("#chart"), MARGINS);
 
 	d3.csv("/data?file=dataset1",
 		function(datum) {
 			return {DATE: d3.timeParse("%Y-%m-%d")(datum.DATE), ICSA: +datum.ICSA};
 		}).then(
 			function(DATA) {
-				console.log(DATA);
-				const DOMAIN = domain(DATA, X_PARAM, Y_PARAM);
+				const DOMAIN = Graph.domain(DATA, PARAMS);
 				let x_scale = d3.scaleTime()
 					.domain(DOMAIN.x)
 					.range([0, GRAPH.width - GRAPH.margins.right - GRAPH.margins.left]);
@@ -36,8 +34,7 @@
 					.attr("transform", `translate(${GRAPH.margins.left},${GRAPH.margins.top})`)
 					.call(d3.axisLeft().scale(y_scale));
 
-				generate_points(GRAPH, DATA, DOMAIN);
-				animate_lines(GRAPH, DATA, DOMAIN);
+				GRAPH.graph(DATA, "incidents", PARAMS, 5000);
 			}
 		)
 
